@@ -96,15 +96,15 @@ class BigText(Widget):
 
 class LineBox(WidgetDecoration, WidgetWrap):
 
-    def __init__(self, original_widget, title="",
+    def __init__(self, original_widget, title="", title_align="center",
                  tlcorner=u'┌', tline=u'─', lline=u'│',
                  trcorner=u'┐', blcorner=u'└', rline=u'│',
                  bline=u'─', brcorner=u'┘'):
         """
         Draw a line around original_widget.
 
-        Use 'title' to set an initial title text with will be centered
-        on top of the box.
+        Use 'title' to set an initial title text which will be placed
+        on top of the box.  'title_align' must be 'left', 'right' or 'center'.
 
         You can also override the widgets used for the lines/corners:
             tline: top line
@@ -124,11 +124,20 @@ class LineBox(WidgetDecoration, WidgetWrap):
         blcorner, brcorner = Text(blcorner), Text(brcorner)
 
         self.title_widget = Text(self.format_title(title))
-        self.tline_widget = Columns([
-            tline,
-            ('flow', self.title_widget),
-            tline,
-        ])
+        if title_align == 'center':
+            self.tline_widget = Columns([
+                tline, ('flow', self.title_widget), tline,
+            ])
+        elif title_align == 'left':
+            self.tline_widget = Columns([
+                ('flow', self.title_widget), tline,
+            ])
+        elif title_align == 'right':
+            self.tline_widget = Columns([
+                tline, ('flow', self.title_widget),
+            ])
+        else:
+            raise LineBoxError('title_align must be "left", "right" or "center"')
 
         top = Columns([
             ('fixed', 1, tlcorner),
